@@ -11,6 +11,6 @@ Repositori ini digunakan sebagai Final Project mata kuliah Pemrograman Web
 ## 🖥️ Teknologi yang Digunakan
 
 - Bahasa Pemrograman: `PHP`, `JavaScript`, `HTML`, `CSS`
-- Framework / Library: `Bootstrap`, `jQuery`, dll.
+- Framework / Library: 
 - Database: `MySQL`
 - API: WhatsApp API, dll.
