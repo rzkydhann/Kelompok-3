@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS db_cuci_sepatu;
+
+USE db_cuci_sepatu;
+
+CREATE TABLE IF NOT EXISTS pesanan (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(100) NOT NULL,
+    jenis_sepatu VARCHAR(100) NOT NULL,
+    ukuran INT NOT NULL,
+    layanan VARCHAR(50) NOT NULL,
+    tanggal TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
