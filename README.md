@@ -4,9 +4,9 @@ Repositori ini digunakan sebagai Final Project mata kuliah Pemrograman Web
 
 ## 🚀 Fitur
 
-- ✅ Fitur 1
-- ✅ Fitur 2
-- ✅ Fitur 3
+- ✅ Pemesanan cuci sepatu
+- ✅ Jasa suci sepatu
+- ✅ Pengantaran sepatu
 
 ## 🖥️ Teknologi yang Digunakan
 
