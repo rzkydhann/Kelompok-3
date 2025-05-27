@@ -1,5 +1,5 @@
 CREATE DATABASE db_sepatu;
-USE db_sepatu_;
+USE db_sepatu;
 
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
