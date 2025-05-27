@@ -1,5 +1,5 @@
-CREATE DATABASE sepatu_db;
-USE sepatu_db;
+CREATE DATABASE db_sepatu;
+USE db_sepatu_;
 
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
