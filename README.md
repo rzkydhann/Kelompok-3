@@ -13,4 +13,3 @@ Repositori ini digunakan sebagai Final Project mata kuliah Pemrograman Web
 - Bahasa Pemrograman: `PHP`, `JavaScript`, `HTML`, `CSS`
 - Framework / Library: `Tailwind CSS`
 - Database: `MySQL`
-- API: WhatsApp API, dll.
