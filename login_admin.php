@@ -137,11 +137,6 @@ if (isset($_POST["loginadmin"])) {
             Akses khusus untuk Administrator
           </p>
           
-          <!-- Demo credentials info -->
-          <div class="mt-3 p-2 bg-blue-50 rounded-lg">
-            <p class="text-xs text-blue-600 font-medium">Demo Login:</p>
-            <p class="text-xs text-blue-500">Username: admin</p>
-            <p class="text-xs text-blue-500">Password: admin123</p>
           </div>
         </div>
       </form>
