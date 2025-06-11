@@ -63,6 +63,7 @@ function registrasiP($data) {
     $hp = htmlspecialchars($data['hp']);
     $email = htmlspecialchars($data['email']);
     $password = mysqli_real_escape_string($conn, $data["password"]);
+    $alamat = strtolower(stripcslashes($data["alamat"]));
 
     $result = mysqli_query($conn, "SELECT username FROM pelanggan WHERE username = '$username'");
     if (mysqli_fetch_assoc($result)) {
@@ -71,56 +72,45 @@ function registrasiP($data) {
     }
 
     $password = password_hash($password, PASSWORD_DEFAULT);
-    mysqli_query($conn, "INSERT INTO pelanggan VALUES('','$nama','$username','$hp','$email','$password')");
+    $stmt = $conn->prepare("INSERT INTO pelanggan (nama, username, hp, email, password, alamat) 
+    VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssss", $nama, $username, $hp, $email, $password, $alamat);
+    $stmt->execute();
+
     return mysqli_affected_rows($conn);
 }
 
-// Fungsi registrasi teknisi (sudah ada, dipertahankan)
-function registrasiT($data) {
-    global $conn;
-    $nama = htmlspecialchars($data['nama']);
-    $username = strtolower(stripcslashes($data["username"]));
-    $hp = htmlspecialchars($data['hp']);
-    $email = htmlspecialchars($data['email']);
-    $password = mysqli_real_escape_string($conn, $data["password"]);
-    $keahlian = htmlspecialchars($data['keahlian']);
-    $alamat = htmlspecialchars($data['alamat']);
-
-    $result = mysqli_query($conn, "SELECT username FROM teknisi WHERE username = '$username'");
-    if (mysqli_fetch_assoc($result)) {
-        echo "<script>alert('Username sudah terdaftar!');</script>";
-        return false;
-    }
-
-    $password = password_hash($password, PASSWORD_DEFAULT);
-    mysqli_query($conn, "INSERT INTO teknisi VALUES('','$nama','$username','$hp','$email','$password','$keahlian','$alamat')");
-    return mysqli_affected_rows($conn);
-}
 
 // Fungsi order (diperbarui dengan prepared statement dan kolom eksplisit)
 function order($data) {
     global $conn;
-    $nama = htmlspecialchars($data['nama']);
-    $hp = htmlspecialchars($data['hp']);
-    $layananPerbaikan = htmlspecialchars($data['layananPerbaikan']);
-    $merk = htmlspecialchars($data['merk']);
-    $jenisPerbaikan = htmlspecialchars($data['jenisPerbaikan']);
-    $tanggal = htmlspecialchars($data['tanggal']);
-    $waktu = htmlspecialchars($data['waktu']);
-    $alamat = htmlspecialchars($data['alamat']);
-    $status = htmlspecialchars($data['status']);
-    $teknisi = htmlspecialchars($data['teknisi']);
-    $catatan_admin = ''; // Nilai default untuk catatan_admin
+    session_start();
 
-    $query = "INSERT INTO orderperbaikan (nama, hp, layananPerbaikan, merk, jenisPerbaikan, tanggal, waktu, alamat, status, teknisi, catatan_admin)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "sssssssssss", $nama, $hp, $layananPerbaikan, $merk, $jenisPerbaikan, $tanggal, $waktu, $alamat, $status, $teknisi, $catatan_admin);
-    $success = mysqli_stmt_execute($stmt);
+    $username = $_SESSION['userpelanggan'] ?? '';
+    $nama = htmlspecialchars($data["nama"]);
+    $hp = htmlspecialchars($data["hp"]);
+    $layanan = htmlspecialchars($data["layananPerbaikan"]);
+    $merk = htmlspecialchars($data["merk"]);
+    $jenis = htmlspecialchars($data["jenisPerbaikan"]);
+    $tanggal = htmlspecialchars($data["tanggal"]);
+    $waktu = htmlspecialchars($data["waktu"]);
+    $alamat = htmlspecialchars($data["alamat"]);
+    $status = htmlspecialchars($data["status"]);
+    $teknisi = htmlspecialchars($data["teknisi"]);
+    $biaya = htmlspecialchars($data["biaya"]);
+    $pembayaran = htmlspecialchars($data["pembayaran"]); // Tambahan pembayaran
+
+    $stmt = mysqli_prepare($conn, "INSERT INTO orderperbaikan 
+        (username, nama, hp, layananperbaikan, merk, jenisperbaikan, tanggal, waktu, alamat, status, teknisi, biaya, pembayaran) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    mysqli_stmt_bind_param($stmt, "sssssssssssis", 
+        $username, $nama, $hp, $layanan, $merk, $jenis, 
+        $tanggal, $waktu, $alamat, $status, $teknisi, $biaya, $pembayaran);
+
+    mysqli_stmt_execute($stmt);
     $affected_rows = mysqli_stmt_affected_rows($stmt);
     mysqli_stmt_close($stmt);
-
     return $affected_rows;
 }
 
@@ -138,7 +128,7 @@ function query($query) {
 // Fungsi completed order (diperbarui dengan prepared statement)
 function completed($id) {
     global $conn;
-    $stmt = mysqli_prepare($conn, "UPDATE orderperbaikan SET status = 'Completed' WHERE id = ?");
+    $stmt = mysqli_prepare($conn, "UPDATE orderperbaikan SET status = 'Complete' WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
     $affected_rows = mysqli_stmt_affected_rows($stmt);
@@ -149,7 +139,7 @@ function completed($id) {
 // Fungsi cancel order (diperbarui dengan prepared statement)
 function canceled($id) {
     global $conn;
-    $stmt = mysqli_prepare($conn, "UPDATE orderperbaikan SET status = 'Canceled' WHERE id = ?");
+    $stmt = mysqli_prepare($conn, "UPDATE orderperbaikan SET status = 'Cancel' WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
     $affected_rows = mysqli_stmt_affected_rows($stmt);
@@ -173,7 +163,7 @@ function ambil($id) {
 // Fungsi baru: update status order (untuk dashboard_admin.php)
 function updateStatus($id, $new_status) {
     global $conn;
-    $allowed_statuses = ['Pending', 'Dalam Penanganan', 'Completed', 'Canceled', 'Menunggu Konfirmasi', 'Diproses'];
+    $allowed_statuses = ['Sepatu Akan Segera Dijemput','Sepatu Diantar Kembali ke Pelanggan', 'Dalam Penanganan', 'Complete', 'Cancel', 'Pembayaranmu Terkonfirmasi', 'Diproses'];
     if (in_array($new_status, $allowed_statuses)) {
         $stmt = mysqli_prepare($conn, "UPDATE orderperbaikan SET status = ? WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "si", $new_status, $id);
