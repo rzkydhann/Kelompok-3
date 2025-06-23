@@ -1,7 +1,7 @@
 <?php
 
 // Koneksi ke database
-$conn = mysqli_connect("localhost", "root", "", "rockshoes");
+$conn = mysqli_connect("localhost", "rockshoe_rockshoes", "12345678", "rockshoe_rockshoes");
 
 // Fungsi untuk memeriksa koneksi
 if (!$conn) {
